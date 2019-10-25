@@ -19,6 +19,7 @@ lib/Protobuf/src \
 lib/Sample/src \
 lib/TinyFrame/src \
 lib/Upacker/src \
+lib/cJSON/src \
 lib/minIni/src \
 . \
 

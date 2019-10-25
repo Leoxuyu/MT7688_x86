@@ -7,62 +7,217 @@
 
 #include <stdio.h>
 
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include "amessage.pb-c.h"
+//#include "protobuf-c.h"
+//
+//void protobuf_encode_decode(void)
+//{
+//	int i=0;
+//    void *buf;                     // Buffer to store serialized data
+//    unsigned msg_len;              // Length of serialized data
+//
+//    // Encode message to buffer
+//
+//    printf("---- Encoding ---\n");
+//        AMessage encode_msg = AMESSAGE__INIT;
+//
+//        encode_msg.has_a  = 1;
+//        encode_msg.a      = atoi("12345");
+//        encode_msg.has_b  = 1;
+//        encode_msg.b      = atoi("67890");
+//
+//        msg_len = amessage__get_packed_size(&encode_msg);
+//        buf = malloc(msg_len);
+//
+//        printf("Encoding %d serialized bytes\n", msg_len);
+//        amessage__pack(&encode_msg, buf);
+//        printf("\n[");
+//        for(i=0;i<msg_len;i++)
+//        {
+//        	printf("0x%02X ",*(uint8_t*)(buf+i));
+//        }
+//        printf("]\n");
+//    // Unpack the message from buffer.
+//    {
+//        printf("---- Decoding ---\n");
+//
+//        AMessage* decode_msg;
+//        decode_msg = amessage__unpack(NULL, msg_len, buf);
+//        if (decode_msg == NULL)
+//        {
+//          printf("Error unpacking incoming message\n");
+//          return;
+//        }
+//        printf("Received: a=%d b=%d \n",decode_msg->a, decode_msg->b);  // required field
+//
+//        amessage__free_unpacked(decode_msg, NULL);
+//    }
+//
+//    free(buf);
+//
+//    return;
+//}
+
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "amessage.pb-c.h"
-#include "protobuf-c.h"
+#include "cJSON.h"
 
-void protobuf_encode_decode(void)
+/* Parse text to JSON, then render back to text, and print! */
+void doit(char *text)
 {
-	int i=0;
-    void *buf;                     // Buffer to store serialized data
-    unsigned msg_len;              // Length of serialized data
+	char *out;cJSON *json;
 
-    // Encode message to buffer
-
-    printf("---- Encoding ---\n");
-        AMessage encode_msg = AMESSAGE__INIT;
-
-        encode_msg.has_a  = 1;
-        encode_msg.a      = atoi("12345");
-        encode_msg.has_b  = 1;
-        encode_msg.b      = atoi("67890");
-
-        msg_len = amessage__get_packed_size(&encode_msg);
-        buf = malloc(msg_len);
-
-        printf("Encoding %d serialized bytes\n", msg_len);
-        amessage__pack(&encode_msg, buf);
-        printf("\n[");
-        for(i=0;i<msg_len;i++)
-        {
-        	printf("0x%02X ",*(uint8_t*)(buf+i));
-        }
-        printf("]\n");
-    // Unpack the message from buffer.
-    {
-        printf("---- Decoding ---\n");
-
-        AMessage* decode_msg;
-        decode_msg = amessage__unpack(NULL, msg_len, buf);
-        if (decode_msg == NULL)
-        {
-          printf("Error unpacking incoming message\n");
-          return;
-        }
-        printf("Received: a=%d b=%d \n",decode_msg->a, decode_msg->b);  // required field
-
-        amessage__free_unpacked(decode_msg, NULL);
-    }
-
-    free(buf);
-
-    return;
+	json=cJSON_Parse(text);
+	if (!json)
+	{
+		printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+	}
+	else
+	{
+		out=cJSON_Print(json);
+		cJSON_Delete(json);
+		printf("%s\n",out);
+		free(out);
+	}
 }
+
+/* Read a file, parse, render back, etc. */
+void dofile(char *filename)
+{
+	FILE *f=fopen(filename,"rb");
+	fseek(f,0,SEEK_END);
+	long len=ftell(f);
+	fseek(f,0,SEEK_SET);
+	char *data=(char*)malloc(len+1);
+	fread(data,1,len,f);
+	fclose(f);
+	doit(data);
+	free(data);
+}
+
+
+
+/* U example datatype. */
+
+struct record {const char *precision;double lat,lon;const char *address,*city,*state,*zip,*country; };
+
+/* Create a bunch of objects as demonstration. */
+void create_objects()
+{
+	cJSON *root,*fmt,*img,*thm,*fld;char *out;int i;        /* declare a few. */
+
+	/* Here we construct some JSON standards, from the JSON site. */
+
+	/* Our "Video" datatype: */
+	root=cJSON_CreateObject();
+	cJSON_AddItemToObject(root, "name", cJSON_CreateString("Jack (\"Bee\") Nimble"));
+	cJSON_AddItemToObject(root, "format", fmt=cJSON_CreateObject());
+	cJSON_AddStringToObject(fmt,"type",             "rect");
+	cJSON_AddNumberToObject(fmt,"width",            1920);
+	cJSON_AddNumberToObject(fmt,"height",           1080);
+	cJSON_AddFalseToObject (fmt,"interlace");
+	cJSON_AddNumberToObject(fmt,"frame rate",       24);
+
+	out=cJSON_Print(root);  cJSON_Delete(root);     printf("%s\n",out);     free(out);      /* Print to text, Delete the cJSON, print it, release the string. */
+
+	/* Our "days of the week" array: */
+	const char *strings[7]={"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+	root=cJSON_CreateStringArray(strings,7);
+
+	out=cJSON_Print(root);  cJSON_Delete(root);     printf("%s\n",out);     free(out);
+
+	/* Our matrix: */
+	int numbers[3][3]={{0,-1,0},{1,0,0},{0,0,1}};
+	root=cJSON_CreateArray();
+	for (i=0;i<3;i++) cJSON_AddItemToArray(root,cJSON_CreateIntArray(numbers[i],3));
+
+/*      cJSON_ReplaceItemInArray(root,1,cJSON_CreateString("Replacement")); */
+
+	out=cJSON_Print(root);  cJSON_Delete(root);     printf("%s\n",out);     free(out);
+
+
+        /* Our "gallery" item: */
+        int ids[4]={116,943,234,38793};
+        root=cJSON_CreateObject();
+        cJSON_AddItemToObject(root, "Image", img=cJSON_CreateObject());
+        cJSON_AddNumberToObject(img,"Width",800);
+        cJSON_AddNumberToObject(img,"Height",600);
+        cJSON_AddStringToObject(img,"Title","View from 15th Floor");
+        cJSON_AddItemToObject(img, "Thumbnail", thm=cJSON_CreateObject());
+        cJSON_AddStringToObject(thm, "Url", "http:/*www.example.com/image/481989943");
+        cJSON_AddNumberToObject(thm,"Height",125);
+        cJSON_AddStringToObject(thm,"Width","100");
+        cJSON_AddItemToObject(img,"IDs", cJSON_CreateIntArray(ids,4));
+
+        out=cJSON_Print(root);  cJSON_Delete(root);     printf("%s\n",out);     free(out);
+
+        /* Our array of "records": */
+        struct record fields[2]={
+        		{"zip",37.7668,-1.223959e+2,"","SAN FRANCISCO","CA","94107","US"},
+                {"zip",37.371991,-1.22026e+2,"","SUNNYVALE","CA","94085","US"}};
+
+	root=cJSON_CreateArray();
+	for (i=0;i<2;i++)
+	{
+		cJSON_AddItemToArray(root,fld=cJSON_CreateObject());
+		cJSON_AddStringToObject(fld, "precision", fields[i].precision);
+                cJSON_AddNumberToObject(fld, "Latitude", fields[i].lat);
+                cJSON_AddNumberToObject(fld, "Longitude", fields[i].lon);
+                cJSON_AddStringToObject(fld, "Address", fields[i].address);
+                cJSON_AddStringToObject(fld, "City", fields[i].city);
+                cJSON_AddStringToObject(fld, "State", fields[i].state);
+
+                cJSON_AddStringToObject(fld, "State", fields[i].state);
+                cJSON_AddStringToObject(fld, "Zip", fields[i].zip);
+                cJSON_AddStringToObject(fld, "Country", fields[i].country);
+	}
+
+/*      cJSON_ReplaceItemInObject(cJSON_GetArrayItem(root,1),"City",cJSON_CreateIntArray(ids,4)); */
+
+	out=cJSON_Print(root);  cJSON_Delete(root);     printf("%s\n",out);     free(out);
+
+}
+
+void cJSON_sample (void)
+{
+        /* a bunch of json: */
+	char text1[]="{\n\"name\": \"Jack (\\\"Bee\\\") Nimble\", \n\"format\": {\"type\":       \"rect\", \n\"width\":      1920, \n\"height\":     1080, \n\"interlace\":  false,\"frame rate\": 24\n}\n}";
+	char text2[]="[\"Sunday\", \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"]";
+	char text3[]="[\n    [0, -1, 0],\n    [1, 0, 0],\n    [0, 0, 1]\n       ]\n";
+	char text4[]="{\n               \"Image\": {\n                  \"Width\":  800,\n                      \"Height\": 600,\n                      \"Title\":  \"View from 15th Floor\",\n                 \"Thumbnail\": {\n                              \"Url\":    \"http:/*www.example.com/image/481989943\",\n                               \"Height\": 125,\n                              \"Width\":  \"100\"\n                   },\n                    \"IDs\": [116, 943, 234, 38793]\n               }\n     }";
+	char text5[]="[\n        {\n     \"precision\": \"zip\",\n       \"Latitude\":  37.7668,\n       \"Longitude\": -122.3959,\n     \"Address\":   \"\",\n  \"City\":      \"SAN FRANCISCO\",\n     \"State\":     \"CA\",\n        \"Zip\":       \"94107\",\n     \"Country\":   \"US\"\n         },\n    {\n     \"precision\": \"zip\",\n       \"Latitude\":  37.371991,\n     \"Longitude\": -122.026020,\n   \"Address\":   \"\",\n  \"City\":      \"SUNNYVALE\",\n         \"State\":     \"CA\",\n        \"Zip\":       \"94085\",\n     \"Country\":   \"US\"\n         }\n     ]";
+
+        /* Process each json textblock by parsing, then rebuilding: */
+	doit(text1);
+	doit(text2);
+	doit(text3);
+	doit(text4);
+	doit(text5);
+
+        /* Parse standard testfiles: */
+ //       dofile("./test1");
+/*      dofile("../../tests/test2"); */
+/*      dofile("../../tests/test3"); */
+/*      dofile("../../tests/test4"); */
+/*      dofile("../../tests/test5"); */
+
+        /* Now some samplecode for building objects concisely: */
+//      create_objects();
+
+        return 0;
+}
+
+
+
+
 
 int main(void)
 {
-	protobuf_encode_decode();
+	cJSON_sample();
+	create_objects();
 	printf("hello!\n");
 	return 0;
 }

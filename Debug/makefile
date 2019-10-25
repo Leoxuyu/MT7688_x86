@@ -9,6 +9,7 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include lib/minIni/src/subdir.mk
+-include lib/cJSON/src/subdir.mk
 -include lib/Upacker/src/subdir.mk
 -include lib/TinyFrame/src/subdir.mk
 -include lib/Sample/src/subdir.mk
