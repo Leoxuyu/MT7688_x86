@@ -14,9 +14,11 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 lib/DeviceDriver/src \
+lib/Mongoose/src \
+lib/Protobuf/src \
 lib/Sample/src \
 lib/TinyFrame/src \
 lib/Upacker/src \
-lib/Upacker \
+lib/minIni/src \
 . \
 
