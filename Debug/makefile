@@ -16,6 +16,7 @@ RM := rm -rf
 -include lib/Protobuf/src/subdir.mk
 -include lib/Mongoose/src/subdir.mk
 -include lib/DeviceDriver/src/subdir.mk
+-include lib/DLT645/src/subdir.mk
 -include subdir.mk
 -include objects.mk
 
