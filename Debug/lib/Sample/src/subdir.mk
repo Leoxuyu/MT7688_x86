@@ -6,19 +6,25 @@
 C_SRCS += \
 ../lib/Sample/src/Ini_sample.c \
 ../lib/Sample/src/TF_Sample.c \
+../lib/Sample/src/cJSON_Sample.c \
 ../lib/Sample/src/mongoose_Sample.c \
+../lib/Sample/src/protobuf_Sample.c \
 ../lib/Sample/src/upack_sample.c 
 
 OBJS += \
 ./lib/Sample/src/Ini_sample.o \
 ./lib/Sample/src/TF_Sample.o \
+./lib/Sample/src/cJSON_Sample.o \
 ./lib/Sample/src/mongoose_Sample.o \
+./lib/Sample/src/protobuf_Sample.o \
 ./lib/Sample/src/upack_sample.o 
 
 C_DEPS += \
 ./lib/Sample/src/Ini_sample.d \
 ./lib/Sample/src/TF_Sample.d \
+./lib/Sample/src/cJSON_Sample.d \
 ./lib/Sample/src/mongoose_Sample.d \
+./lib/Sample/src/protobuf_Sample.d \
 ./lib/Sample/src/upack_sample.d 
 
 
