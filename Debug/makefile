@@ -9,14 +9,15 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include lib/minIni/src/subdir.mk
+-include lib/libmodbus/src/subdir.mk
 -include lib/cJSON/src/subdir.mk
 -include lib/Upacker/src/subdir.mk
 -include lib/TinyFrame/src/subdir.mk
 -include lib/Sample/src/subdir.mk
 -include lib/Protobuf/src/subdir.mk
 -include lib/Mongoose/src/subdir.mk
+-include lib/LSSDP/src/subdir.mk
 -include lib/DeviceDriver/src/subdir.mk
--include lib/DLT645/src/subdir.mk
 -include subdir.mk
 -include objects.mk
 

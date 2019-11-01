@@ -13,14 +13,15 @@ C_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-lib/DLT645/src \
 lib/DeviceDriver/src \
+lib/LSSDP/src \
 lib/Mongoose/src \
 lib/Protobuf/src \
 lib/Sample/src \
 lib/TinyFrame/src \
 lib/Upacker/src \
 lib/cJSON/src \
+lib/libmodbus/src \
 lib/minIni/src \
 . \
 
