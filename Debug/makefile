@@ -8,6 +8,9 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include lib/picoc/src/subdir.mk
+-include lib/picoc/cstdlib/subdir.mk
+-include lib/picoc/subdir.mk
 -include lib/minIni/src/subdir.mk
 -include lib/libmodbus/src/subdir.mk
 -include lib/cJSON/src/subdir.mk

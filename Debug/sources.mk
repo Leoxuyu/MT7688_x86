@@ -23,5 +23,8 @@ lib/Upacker/src \
 lib/cJSON/src \
 lib/libmodbus/src \
 lib/minIni/src \
+lib/picoc/cstdlib \
+lib/picoc \
+lib/picoc/src \
 . \
 
